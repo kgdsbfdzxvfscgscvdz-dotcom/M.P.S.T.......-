@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M.P.S.T Fleet Management</title>
+<style>
+*{box-sizing:border-box}
+#welcomeScreen{position:fixed;inset:0;background:#17234b;color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .6s ease,visibility .6s ease;font-family:Tahoma,Arial,sans-serif}
+#welcomeScreen.fade-out{opacity:0;visibility:hidden}
+#welcomeScreen h1{font-size:32px;letter-spacing:2px;margin-bottom:10px;text-align:center}
+#welcomeScreen p{font-size:16px;color:#cbd2e8;margin:0}
+body{margin:0;background-color:#f1f3f9;background-image:linear-gradient(rgba(241,243,249,.92),rgba(241,243,249,.92)),url('87978.jpg');background-size:cover;background-position:center;background-attachment:fixed;color:#17234b;font-family:Tahoma,Arial,sans-serif}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer;border:0}
+header{background:#17234b;color:white;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-size:23px;font-weight:bold;letter-spacing:2px}
+.sub{font-size:11px;color:#cbd2e8;margin-top:5px}
+main{max-width:1100px;margin:25px auto;padding:0 14px}
+.panel{background:rgba(255,255,255,.95);border-radius:15px;padding:20px;margin-bottom:18px;box-shadow:0 4px 16px #17234b12}
+h2,h3{margin:0 0 15px}
+.muted{color:#7b849c;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.location,.vehicle,.role{background:rgba(255,255,255,.95);border:1px solid #e0e4ef;border-radius:13px;padding:20px;text-align:right;box-shadow:0 3px 10px #17234b0b}
+.location{cursor:pointer}
+.location:hover,.vehicle:hover{border-color:#4169e1}
+.location strong{display:block;font-size:20px;margin-bottom:8px}
+.vehicle{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.vehicle b{font-size:19px}
+.vehicle small{display:block;color:#7b849c;margin-top:5px}
+.blue{background:#3264e9;color:white;padding:10px 20px;border-radius:8px}
+.dark{background:#17234b;color:white;padding:11px 18px;border-radius:8px}
+.green{background:#0c9d62;color:white;padding:10px 17px;border-radius:8px}
+.red{background:#e93650;color:white;padding:9px 14px;border-radius:8px}
+.gray{background:#e9edf5;color:#27365d;padding:10px 16px;border-radius:8px}
+.back{background:transparent;color:white;font-size:15px}
+.hidden{display:none!important}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+.tab{padding:10px 16px;border-radius:8px;background:#e9edf5;color:#27365d}
+.tab.active{background:#17234b;color:white}
+.formgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+label{display:block;font-size:13px;font-weight:bold;margin-bottom:7px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #d6dbea;border-radius:8px;background:#fff;color:#17234b;outline:none}
+textarea{min-height:45px;resize:vertical}
+.form-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:13px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:white;min-width:650px}
+th{background:#17234b;color:white;padding:13px 10px}
+td{border:1px solid #dce1ed;padding:12px 10px;text-align:center}
+tr:nth-child(even) td{background:#fafbfe}
+.section-title{background:#17234b;color:white;padding:13px 16px;border-radius:9px 9px 0 0;margin-top:18px}
+.empty{text-align:center;color:#8991a5;padding:25px}
+.modal-bg{position:fixed;inset:0;background:#07112dcc;display:flex;align-items:center;justify-content:center;padding:18px;z-index:10}
+.modal{background:white;padding:24px;border-radius:15px;width:min(420px,100%);box-shadow:0 10px 35px #0003}
+.modal h3{margin-bottom:18px}
+.role{cursor:pointer;text-align:center}
+.role strong{font-size:20px;display:block;margin-bottom:8px}
+.warning{color:#d71935;background:#fff0f1;border:1px solid #f3b8c0;border-radius:10px;padding:18px 12px;text-align:center;font-weight:bold;line-height:1.6;font-size:13px;margin-bottom:16px}
+@media(max-width:600px){header{padding:15px}.logo{font-size:19px}main{margin:16px auto}.panel{padding:14px}.vehicle{padding:14px}}
+</style>
+</head>
+<body>
+
+<div id="welcomeScreen">
+<h1>Welcome to M.P.S.T</h1>
+<p>نظام إدارة أسطول السيارات والمخازن — جاري التحميل...</p>
+</div>
+
+<header>
+<div>
+<div class="logo">M.P.S.T</div>
+<div class="sub">FLEET MANAGEMENT SYSTEM</div>
+</div>
+<button class="back" onclick="goBack()">رجوع ↩</button>
+</header>
+
+<main>
+<section id="home">
+<div class="panel">
+<h2>إدارة أسطول السيارات والمخازن</h2>
+<div class="muted">اختار القسم المطلوب</div>
+</div>
+<div class="grid">
+<div class="location" onclick="openLocation('borg')"><strong>موقع برج العرب</strong><span class="muted">عرض السجلات والمركبات</span></div>
+<div class="location" onclick="openLocation('razzaq')"><strong>موقف الرزاق</strong><span class="muted">عرض السجلات والمركبات</span></div>
+<div class="location" onclick="openWarehouse('borg_store')" style="border-color:#3264e9"><strong>مخزن برج العرب</strong><span class="muted">إدارة وإضافة عناصر المخزن</span></div>
+<div class="location" onclick="openWarehouse('razzaq_store')" style="border-color:#3264e9"><strong>مخزن الرزاق</strong><span class="muted">إدارة وإضافة عناصر المخزن</span></div>
+</div>
+</section>
+
+<section id="warehousePage" class="hidden">
+<div class="panel">
+<h2 id="warehouseTitle"></h2>
+<div class="form-actions" style="margin-bottom:20px"><button class="blue" onclick="openAddWarehouseItemModal()">＋ إضافة عنصر جديد للمخزن</button></div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>م</th><th>اسم الصنف / العنصر</th><th>الكمية</th><th>ملاحظات</th><th>الإجراءات</th></tr></thead>
+<tbody id="warehouseTableBody"></tbody>
+</table>
+</div>
+<div id="warehouseEmpty" class="empty hidden">لا توجد عناصر مضافة في هذا المخزن حتى الآن.</div>
+</div>
+</section>
+
+<section id="vehiclesPage" class="hidden">
+<div class="panel">
+<h2 id="locationTitle"></h2>
+<div class="tabs">
+<button class="tab active" onclick="showVehicleType('cars',this)">السيارات</button>
+<button class="tab" onclick="showVehicleType('trailers',this)">المقطورات</button>
+</div>
+<div id="vehiclesList"></div>
+</div>
+</section>
+
+<section id="recordsPage" class="hidden">
+<div class="panel">
+<h2 id="vehicleTitle"></h2>
+<div class="muted" id="vehicleSubtitle"></div>
+</div>
+<div class="panel">
+<div id="adminTools" class="hidden">
+<h3>إضافة سجل جديد</h3>
+<form id="recordForm">
+<div class="formgrid">
+<div><label>نوع السجل</label><select id="category" required><option value="التكاليف">التكاليف</option><option value="الصيانة">الصيانة</option></select></div>
+<div><label>التاريخ</label><input type="date" id="date" required></div>
+<div><label>نوع العملية</label><input id="kind" placeholder="اكتب نوع العملية" required></div>
+<div><label>المبلغ (جنيه)</label><input type="number" id="amount" min="0" placeholder="المبلغ"></div>
+<div><label>البيان / التفاصيل</label><textarea id="details" placeholder="اكتب التفاصيل هنا"></textarea></div>
+</div>
+<div class="form-actions">
+<button class="green" type="submit" id="saveBtn">＋ إضافة سجل</button>
+<button class="gray hidden" type="button" id="cancelEdit" onclick="cancelEditing()">إلغاء التعديل</button>
+</div>
+</form>
+</div>
+<div id="recordsContainer"></div>
+<div id="monitorEmpty" class="empty hidden">لا توجد سجلات مضافة حتى الآن.</div>
+</div>
+</section>
+</main>
+
+<div id="modalBg" class="modal-bg hidden">
+<div class="modal">
+<h3 id="modalTitle">اختيار طريقة الدخول</h3>
+<div id="modalContent"></div>
+<div class="form-actions"><button class="gray" onclick="closeModal()">إغلاق</button></div>
+</div>
+</div>
+
+<script>
+window.addEventListener("load",()=>{
+setTimeout(()=>{
+const welcome=document.getElementById("welcomeScreen");
+if(welcome)welcome.classList.add("fade-out");
+},2000);
+});
+
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbxip9nV9whFVXSE0WM021RJfs1Mz8nmIwZVwiOdZEgGcHIHeAIflV8JlUHg2SgLyzs/exec";
+
+const locations={
+borg:{
+title:"موقع برج العرب",
+cars:[
+["8518","ك ج"],["1648","ك ك"],["745","ج ي ب"],
+["3987","أ ب م"],["6956","ع ج ن"],["1649","ك ك"],
+["3262","أ ل ط"],["671","ط ن ب"],["9841","غير موضح"],
+["5671","د ق ب"],["2927","أ ل ب"]
+],
+trailers:[
+["6345","أ و ي"],["6157","ج ط ج"],["3186","ب م ر"],
+["3513","ع ج و"],["6548","أ و ي"],["3198","ب م ر"],
+["8579","أ ه ب"],["8634","أ ه ب"],["4581","غير موضح"],
+["5376","ر ط د"],["6492","أ و ي"]
+]
+},
+razzaq:{
+title:"موقف الرزاق",
+cars:[
+["7976","د س ن"],["3352","د ط ب"],["5465","د ج ع"],
+["1417","أ ل د"],["3578","أ د ن"],["3562","أ د ن"],
+["2712","أ ل ب"],["3567","أ د ن"]
+],
+trailers:[
+["4614","د س أ"],["1569","د ه ي"],["3138","د ج و"],
+["9456","د أ ط"],["8549","أ ه ب"],["8639","أ ه ب"],
+["8534","أ ه ب"],["3214","ب م ر"]
+]
+}
+};
+
+const categories=["التكاليف","الصيانة"];
+const ADMIN_PASSWORD="Wael@1212";
+const WAREHOUSE_ADD_PASSWORD="543210";
+
+let currentLocation="";
+let currentType="cars";
+let currentVehicle=null;
+let currentKey="";
+let currentRole="";
+let editingId=null;
+let currentWarehouse="";
+let cloudDataCache={};
+
+async function loadDataFromCloud(){
+try{
+const response=await fetch(SCRIPT_URL+"?action=get");
+const data=await response.json();
+let formattedData={};
+if(Array.isArray(data)){
+data.forEach(row=>{
+let key=row.vehicleKey||row.vehilceKey;
+if(!key)return;
+if(!formattedData[key])formattedData[key]=[];
+formattedData[key].push({
+id:row.id||row.ID,
+category:String(row.category||"").trim(),
+date:row.date,
+kind:row.kind,
+amount:row.amount,
+details:row.details,
+name:row.name,
+qty:row.qty,
+notes:row.notes
+});
+});
+}
+cloudDataCache=formattedData;
+return formattedData;
+}catch(error){
+console.error("خطأ في جلب البيانات:",error);
+return cloudDataCache;
+}
+}
+
+function getRecords(){return cloudDataCache[currentKey]||[];}
+
+async function openWarehouse(warehouseKey){
+currentWarehouse=warehouseKey;
+document.getElementById("warehouseTitle").textContent=warehouseKey==="borg_store"?"مخزن برج العرب":"مخزن الرزاق";
+setPage("warehousePage");
+await loadDataFromCloud();
+renderWarehouseItems();
+}
+
+function getWarehouseItems(){return cloudDataCache[currentWarehouse]||[];}
+
+function renderWarehouseItems(){
+const tbody=document.getElementById("warehouseTableBody");
+tbody.innerHTML="";
+const items=getWarehouseItems();
+if(items.length===0){
+document.getElementById("warehouseEmpty").classList.remove("hidden");
+return;
+}
+document.getElementById("warehouseEmpty").classList.add("hidden");
+items.forEach((item,index)=>{
+const tr=document.createElement("tr");
+tr.innerHTML=`<td>${index+1}</td><td>${item.name||"—"}</td><td>${item.qty||"—"}</td><td>${item.notes||"—"}</td><td><button class="red" onclick="deleteWarehouseItem('${item.id}')">حذف</button></td>`;
+tbody.appendChild(tr);
+});
+}
+
+function openAddWarehouseItemModal(){
+document.getElementById("modalTitle").textContent="إضافة عنصر جديد للمخزن";
+document.getElementById("modalContent").innerHTML=`
+<form id="warehouseItemForm" onsubmit="saveWarehouseItem(event)">
+<div style="margin-bottom:10px"><label>اسم الصنف / العنصر</label><input type="text" id="wItemName" placeholder="اكتب اسم الصنف" required></div>
+<div style="margin-bottom:10px"><label>الكمية</label><input type="number" id="wItemQty" placeholder="الكمية" required min="1"></div>
+<div style="margin-bottom:10px"><label>ملاحظات</label><textarea id="wItemNotes" placeholder="ملاحظات اختيارية"></textarea></div>
+<button class="blue" type="submit" style="width:100%">حفظ وإضافة</button>
+</form>`;
+document.getElementById("modalBg").classList.remove("hidden");
+}
+
+async function saveWarehouseItem(e){
+e.preventDefault();
+
+const password=prompt("أدخل كلمة المرور لإضافة عنصر جديد للمخزن:");
+
+if(password===null)return;
+
+if(password!==WAREHOUSE_ADD_PASSWORD){
+alert("كلمة المرور غير صحيحة. لا يمكن إضافة العنصر.");
+return;
+}
+
+const newItem={
+id:Date.now().toString()+Math.random().toString(16).slice(2),
+vehicleKey:currentWarehouse,
+name:document.getElementById("wItemName").value.trim(),
+qty:document.getElementById("wItemQty").value.trim(),
+notes:document.getElementById("wItemNotes").value.trim(),
+category:"",date:"",kind:"",amount:""
+};
+if(!cloudDataCache[currentWarehouse])cloudDataCache[currentWarehouse]=[];
+cloudDataCache[currentWarehouse].push(newItem);
+closeModal();
+renderWarehouseItems();
+try{
+await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"add",data:newItem})});
+}catch(err){console.error("خطأ في الاتصال",err);}
+}
+
+async function deleteWarehouseItem(id){
+const password=prompt("أدخل كلمة مرور الإدارة لحذف عنصر المخزن:");
+
+if(password===null)return;
+
+if(password!==ADMIN_PASSWORD){
+alert("كلمة المرور غير صحيحة. لا يمكن حذف العنصر.");
+return;
+}
+
+if(!confirm("هل أنت متأكد من حذف هذا العنصر؟"))return;
+
+if(cloudDataCache[currentWarehouse]){
+cloudDataCache[currentWarehouse]=cloudDataCache[currentWarehouse].filter(i=>String(i.id)!==String(id));
+renderWarehouseItems();
+}
+try{
+await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"delete",id:id})});
+}catch(err){console.error("خطأ في الحذف",err);}
+}
+
+function setPage(page){
+["home","vehiclesPage","recordsPage","warehousePage"].forEach(id=>{
+document.getElementById(id).classList.toggle("hidden",id!==page);
+});
+}
+
+async function openLocation(id){
+currentLocation=id;
+document.getElementById("locationTitle").textContent=locations[id].title;
+currentType="cars";
+document.querySelectorAll(".tabs .tab").forEach((b,i)=>b.classList.toggle("active",i===0));
+setPage("vehiclesPage");
+await loadDataFromCloud();
+renderVehicles();
+}
+
+function showVehicleType(type,button){
+currentType=type;
+document.querySelectorAll(".tabs .tab").forEach(b=>b.classList.remove("active"));
+button.classList.add("active");
+renderVehicles();
+}
+
+function renderVehicles(){
+const list=document.getElementById("vehiclesList");
+list.innerHTML="";
+locations[currentLocation][currentType].forEach(vehicle=>{
+const div=document.createElement("div");
+div.className="vehicle";
+const info=document.createElement("div");
+info.innerHTML="<b></b><small></small>";
+info.querySelector("b").textContent="رقم "+vehicle[0];
+info.querySelector("small").textContent="الحروف: "+vehicle[1];
+const btn=document.createElement("button");
+btn.className="blue";
+btn.textContent="الدخول";
+btn.onclick=()=>chooseRole(vehicle);
+div.append(info,btn);
+list.appendChild(div);
+});
+}
+
+function chooseRole(vehicle){
+currentVehicle=vehicle;
+currentKey=currentLocation+"_"+currentType+"_"+vehicle[0];
+document.getElementById("modalTitle").textContent="اختار طريقة الدخول";
+document.getElementById("modalContent").innerHTML=`
+<div class="grid">
+<button class="role" onclick="adminLogin()"><strong>الإدارة</strong><span class="muted">إضافة وتعديل وحذف السجلات</span></button>
+<button class="role" onclick="monitorLogin()"><strong>المراقبة</strong><span class="muted">عرض السجلات بدون أسعار الفلوس</span></button>
+</div>`;
+document.getElementById("modalBg").classList.remove("hidden");
+}
+
+function adminLogin(){
+document.getElementById("modalTitle").textContent="Admin Authentication";
+document.getElementById("modalContent").innerHTML=`
+<div class="warning">Important Notice:<br>Please contact the administration to obtain the password prior to attempting login.</div>
+<label>كلمة المرور</label>
+<input type="password" id="adminPass" placeholder="اكتب كلمة المرور">
+<button class="dark" style="width:100%;margin-top:8px" onclick="checkAdmin()">دخول</button>
+<div id="passError" style="color:#d22;margin-top:10px;font-size:13px"></div>`;
+}
+
+function checkAdmin(){
+const pass=document.getElementById("adminPass").value;
+if(pass!==ADMIN_PASSWORD){
+document.getElementById("passError").textContent="كلمة المرور غير صحيحة";
+return;
+}
+currentRole="admin";
+closeModal();
+openRecords();
+}
+
+function monitorLogin(){
+currentRole="monitor";
+closeModal();
+openRecords();
+}
+
+function closeModal(){document.getElementById("modalBg").classList.add("hidden");}
+
+async function openRecords(){
+editingId=null;
+document.getElementById("vehicleTitle").textContent=(currentType==="cars"?"سيارة رقم ":"مقطورة رقم ")+currentVehicle[0];
+document.getElementById("vehicleSubtitle").textContent=locations[currentLocation].title+" — "+currentVehicle[1];
+document.getElementById("adminTools").classList.toggle("hidden",currentRole!=="admin");
+document.getElementById("monitorEmpty").classList.add("hidden");
+document.getElementById("recordForm").reset();
+document.getElementById("date").value=new Date().toISOString().slice(0,10);
+document.getElementById("saveBtn").textContent="＋ إضافة سجل";
+document.getElementById("cancelEdit").classList.add("hidden");
+setPage("recordsPage");
+await loadDataFromCloud();
+renderRecords();
+}
+
+function renderRecords(){
+const container=document.getElementById("recordsContainer");
+container.innerHTML="";
+const records=getRecords();
+const visibleCategories=categories;
+let hasAnyRecord=records.length>0;
+if(currentRole==="monitor"&&!hasAnyRecord){
+document.getElementById("monitorEmpty").classList.remove("hidden");
+return;
+}
+document.getElementById("monitorEmpty").classList.add("hidden");
+visibleCategories.forEach(cat=>{
+const rows=records.filter(r=>String(r.category).trim()===String(cat).trim());
+if(currentRole==="monitor"&&rows.length===0)return;
+const title=document.createElement("div");
+title.className="section-title";
+title.textContent="سجل "+cat;
+container.appendChild(title);
+const wrap=document.createElement("div");
+wrap.className="table-wrap";
+const table=document.createElement("table");
+if(currentRole==="monitor"){
+table.innerHTML=`<thead><tr><th>م</th><th>التاريخ</th><th>نوع العملية</th><th>البيان</th></tr></thead><tbody></tbody>`;
+}else{
+table.innerHTML=`<thead><tr><th>م</th><th>التاريخ</th><th>نوع العملية</th><th>المبلغ (جنيه)</th><th>البيان</th><th>الإجراءات</th></tr></thead><tbody></tbody>`;
+}
+const tbody=table.querySelector("tbody");
+rows.forEach((r,index)=>{
+const tr=document.createElement("tr");
+if(currentRole==="monitor"){
+[index+1,r.date,r.kind,r.details||"—"].forEach(value=>{
+const td=document.createElement("td");
+td.textContent=value;
+tr.appendChild(td);
+});
+}else{
+[index+1,r.date,r.kind,r.amount||"—",r.details||"—"].forEach(value=>{
+const td=document.createElement("td");
+td.textContent=value;
+tr.appendChild(td);
+});
+const td=document.createElement("td");
+const edit=document.createElement("button");
+edit.className="blue";
+edit.textContent="تعديل";
+edit.onclick=()=>editRecord(r.id);
+const del=document.createElement("button");
+del.className="red";
+del.style.marginRight="5px";
+del.textContent="حذف";
+del.onclick=()=>deleteRecord(r.id);
+td.append(edit,del);
+tr.appendChild(td);
+}
+tbody.appendChild(tr);
+});
+if(rows.length===0){
+const tr=document.createElement("tr");
+const td=document.createElement("td");
+td.colSpan=currentRole==="admin"?6:4;
+td.className="empty";
+td.textContent="لا توجد سجلات في هذا القسم";
+tr.appendChild(td);
+tbody.appendChild(tr);
+}
+wrap.appendChild(table);
+container.appendChild(wrap);
+});
+}
+
+document.getElementById("recordForm").addEventListener("submit",async function(e){
+e.preventDefault();
+if(currentRole!=="admin")return;
+const isEditing=!!editingId;
+const record={
+id:editingId||(Date.now().toString()+Math.random().toString(16).slice(2)),
+vehicleKey:currentKey,
+category:document.getElementById("category").value,
+date:document.getElementById("date").value,
+kind:document.getElementById("kind").value.trim(),
+amount:document.getElementById("amount").value,
+details:document.getElementById("details").value.trim(),
+name:"",qty:"",notes:""
+};
+if(!cloudDataCache[currentKey])cloudDataCache[currentKey]=[];
+if(isEditing){
+cloudDataCache[currentKey]=cloudDataCache[currentKey].map(r=>r.id===editingId?record:r);
+}else{
+cloudDataCache[currentKey].push(record);
+}
+renderRecords();
+cancelEditing();
+try{
+await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:isEditing?"update":"add",data:record})});
+}catch(err){console.error("خطأ أثناء الإرسال",err);}
+});
+
+function editRecord(id){
+if(currentRole!=="admin")return;
+const record=getRecords().find(r=>r.id===id);
+if(!record)return;
+editingId=id;
+document.getElementById("category").value=record.category;
+document.getElementById("date").value=record.date;
+document.getElementById("kind").value=record.kind;
+document.getElementById("amount").value=record.amount;
+document.getElementById("details").value=record.details;
+document.getElementById("saveBtn").textContent="حفظ التعديل";
+document.getElementById("cancelEdit").classList.remove("hidden");
+document.getElementById("adminTools").scrollIntoView({behavior:"smooth"});
+}
+
+async function deleteRecord(id){
+if(currentRole!=="admin")return;
+if(!confirm("هل أنت متأكد من حذف هذا السجل؟"))return;
+if(cloudDataCache[currentKey]){
+cloudDataCache[currentKey]=cloudDataCache[currentKey].filter(r=>r.id!==id);
+renderRecords();
+}
+try{
+await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({action:"delete",id:id})});
+}catch(err){console.error("خطأ أثناء الحذف",err);}
+}
+
+function cancelEditing(){
+editingId=null;
+document.getElementById("recordForm").reset();
+document.getElementById("date").value=new Date().toISOString().slice(0,10);
+document.getElementById("saveBtn").textContent="＋ إضافة سجل";
+document.getElementById("cancelEdit").classList.add("hidden");
+}
+
+function goBack(){
+if(!document.getElementById("recordsPage").classList.contains("hidden")){
+currentRole="";
+setPage("vehiclesPage");
+}else if(!document.getElementById("vehiclesPage").classList.contains("hidden")){
+setPage("home");
+}else if(!document.getElementById("warehousePage").classList.contains("hidden")){
+setPage("home");
+}else{
+setPage("home");
+}
+}
+
+document.getElementById("date").value=new Date().toISOString().slice(0,10);
+loadDataFromCloud();
+</script>
+</body>
+                                   </html>
